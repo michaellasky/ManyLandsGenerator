@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: bfb6b7f8cdcd13a479ca7fc6ba357960
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - Terrain1: {instanceID: 0}
+  - Terrain2: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 

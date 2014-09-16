@@ -1,0 +1,1409 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CoherentNoise</name>
+    </assembly>
+    <members>
+        <member name="M:CoherentNoise.LatticeNoise.GetValue(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Noise value at integer coordinates. Used as a source for interpolated coherent noise
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <returns></returns>
+        </member>
+        <member name="P:CoherentNoise.LatticeNoise.Period">
+            <summary>
+            Lattice period. Used for periodic (seamless) generators.
+            Noise is non-periodic if Period &lt;= 0
+            </summary>
+        </member>
+        <member name="T:CoherentNoise.Texturing.TextureMaker">
+            <summary>
+            Use methods in this class to create Unity textures with noise generators. All textures are created using 2D noise (i.e, Z coordinate is always 0), and sample source noise in
+            [0,1]x[0,1] area.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Texturing.TextureMaker.Make(System.Int32,System.Int32,System.Func{System.Single,System.Single,UnityEngine.Color},UnityEngine.TextureFormat)">
+             <summary>
+             Generic texture-building method. Creates a texture using a fuction that transforms float coordiantes (in the range [0,1]x[0,1]) into color
+             </summary>
+            <param name="width">Texture width.</param>
+            <param name="height">Texture height</param>
+             <param name="colorFunc">Function mapping coordinates to color</param>
+            <param name="format">Texture format to use</param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.Texturing.TextureMaker.AlphaTexture(System.Int32,System.Int32,CoherentNoise.Generator)">
+            <summary>
+             Creates a texture with only alpha channel.
+            </summary>
+            <param name="width">Texture width.</param>
+            <param name="height">Texture height</param>
+            <param name="noise">Noise source</param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.Texturing.TextureMaker.MonochromeTexture(System.Int32,System.Int32,CoherentNoise.Generator)">
+            <summary>
+             Creates a monochrome texture.
+            </summary>
+            <param name="width">Texture width.</param>
+            <param name="height">Texture height</param>
+            <param name="noise">Noise source</param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.Texturing.TextureMaker.RampTexture(System.Int32,System.Int32,CoherentNoise.Generator,UnityEngine.Texture2D)">
+            <summary>
+             Creates a texture using ramp of colors. Noise value (clamped to [-1,1]) is mapped to one-dimensional ramp texture to obtain final color.
+             As there are no 1-dimensional textures in Unity, Texture2D is used, that is sampled along its top line.
+            </summary>
+            <param name="width">Texture width.</param>
+            <param name="height">Texture height</param>
+            <param name="noise">Noise source</param>
+            <param name="ramp">Ramp texture</param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.Texturing.TextureMaker.BumpMap(System.Int32,System.Int32,CoherentNoise.Generator)">
+            <summary>
+             Creates a texture to use as a bump map, taking height noise as input.
+            </summary>
+            <param name="width">Texture width.</param>
+            <param name="height">Texture height</param>
+            <param name="noise">heightmap  source</param>
+            <returns></returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Voronoi.VoronoiPits">
+            <summary>
+            This generator creates a "pits" Voronoi diargam, that simply returns distance to closest control point. Resulting noise has value 0 at control points (forming pits) and higher values away from control points.
+            </summary>
+        </member>
+        <member name="T:CoherentNoise.Generation.Voronoi.VoronoiDiagramBase">
+            <summary>
+            Base class for Voronoi diagrams generators. Voronoi diagrams use a set of control points, that are somehow distributed, and for every point calculate distances to the closest control points.
+            These distances are then combined to obtain final noise value.
+            This generator distributes control points by randomly displacing points with integer coordinates. Thus, every unit-sized cube will have a single control point in it,
+            randomly placed.
+            </summary>
+        </member>
+        <member name="T:CoherentNoise.Generator">
+            <summary>
+            A noise generator. 
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generator.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="M:CoherentNoise.Generator.GetValue(UnityEngine.Vector3)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="v">Point coordinates</param>
+        </member>
+        <member name="M:CoherentNoise.Generator.op_Addition(CoherentNoise.Generator,CoherentNoise.Generator)">
+            <summary>
+             Overloaded + 
+             Returns new generator that sums these two
+            </summary>
+            <param name="g1"></param>
+            <param name="g2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.Generator.op_Addition(CoherentNoise.Generator,System.Single)">
+            <summary>
+             Overloaded + 
+             Returns new generator that adds a constant value
+            </summary>
+            <param name="g1"></param>
+            <param name="f"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.Generator.op_UnaryNegation(CoherentNoise.Generator)">
+            <summary>
+             Overloaded unary - 
+             Returns inverse of argument generator
+            </summary>
+            <param name="g1"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.Generator.op_Subtraction(CoherentNoise.Generator,CoherentNoise.Generator)">
+            <summary>
+             Overloaded - 
+             Returns new generator that subtracts second argument from first
+            </summary>
+            <param name="g1"></param>
+            <param name="g2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.Generator.op_Subtraction(CoherentNoise.Generator,System.Single)">
+            <summary>
+             Overloaded - 
+             Returns new generator that subtracts a constant value
+            </summary>
+            <param name="g1"></param>
+            <param name="f"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.Generator.op_Subtraction(System.Single,CoherentNoise.Generator)">
+            <summary>
+             Overloaded - 
+             Returns new generator that subtracts generator from a constant value
+            </summary>
+            <param name="g1"></param>
+            <param name="f"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.Generator.op_Multiply(CoherentNoise.Generator,CoherentNoise.Generator)">
+            <summary>
+             Overloaded *
+             Returns new generator that multiplies these two
+            </summary>
+            <param name="g1"></param>
+            <param name="g2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.Generator.op_Multiply(CoherentNoise.Generator,System.Single)">
+            <summary>
+             Overloaded *
+             Returns new generator that multiplies noise by a constant value
+            </summary>
+            <param name="g1"></param>
+            <param name="f"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.Generator.op_Division(CoherentNoise.Generator,CoherentNoise.Generator)">
+            <summary>
+             Overloaded /
+             Returns new generator that divides values of argument generators. Beware of zeroes!
+            </summary>
+            <param name="g1"></param>
+            <param name="g2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.Generator.op_Division(CoherentNoise.Generator,System.Single)">
+            <summary>
+             Overloaded /
+             Returns new generator that divides noise by a constant value
+            </summary>
+            <param name="g1"></param>
+            <param name="f"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.Generator.op_Division(System.Single,CoherentNoise.Generator)">
+            <summary>
+             Overloaded /
+             Returns new generator that divides constant value by noise values
+            </summary>
+            <param name="g1"></param>
+            <param name="f"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.Generator.op_Implicit(System.Single)~CoherentNoise.Generator">
+            <summary>
+             Conversion operator. Float values may be implicitly converted to a generator that return this value
+            </summary>
+            <param name="f"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiDiagramBase.#ctor(System.Int32)">
+            <summary>
+            Create new Voronoi diagram using seed. Control points will be obtained using random displacment seeded by supplied value
+            </summary>
+            <param name="seed">Seed value</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiDiagramBase.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiDiagramBase.GetResult(System.Single,System.Single,System.Single)">
+            <summary>
+            Override this method to calculate final value using distances to closest control points.
+            Note that distances that get passed to this function are adjusted for frequency (i.e. distances are scaled so that 
+            control points are in unit sized cubes)
+            </summary>
+            <param name="min1">Distance to closest point</param>
+            <param name="min2">Distance to second-closest point</param>
+            <param name="min3">Distance to third-closest point</param>
+            <returns></returns>
+        </member>
+        <member name="P:CoherentNoise.Generation.Voronoi.VoronoiDiagramBase.Period">
+            <summary>
+            Noise period. Used for repeating (seamless) noise.
+            When Period &gt;0 resulting noise pattern repeats exactly every Period, for all coordinates.
+            </summary>
+        </member>
+        <member name="P:CoherentNoise.Generation.Voronoi.VoronoiDiagramBase.Frequency">
+            <summary>
+            Frequency of control points. This has the same effect as applying <see cref="T:CoherentNoise.Generation.Displacement.Scale"/> transform to the generator, or placing control points closer together (for high frequency) or further apart (for low frequency)
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiPits.#ctor(System.Int32)">
+            <summary>
+            Create new Voronoi diagram using seed. Control points will be obtained using random <see cref="T:CoherentNoise.Generation.GradientNoise"/> displacment seeded by supplied value
+            </summary>
+            <param name="seed">Seed value</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiPits.GetResult(System.Single,System.Single,System.Single)">
+            <summary>
+            Override this method to calculate final value using distances to closest control points.
+            Note that distances that get passed to this function are adjusted for frequency (i.e. distances are scaled so that 
+            control points are in unit sized cubes)
+            </summary>
+            <param name="min1">Distance to closest point</param>
+            <param name="min2">Distance to second-closest point</param>
+            <param name="min3">Distance to third-closest point</param>
+            <returns></returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Patterns.Spheres">
+            <summary>
+             Generates concentric spheres centered in (0,0,0). Resulting "noise" has value -1 in the center, 1 at radius, -1 at 2*radius etc. 
+            </summary>
+        </member>
+        <member name="T:CoherentNoise.Generation.Function">
+            <summary>
+            This generator creates "noise" that is actually a function of coordinates. Use it to create regular patterns that are then perturbed by noise
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Function.#ctor(System.Func{System.Single,System.Single,System.Single,System.Single})">
+            <summary>
+            Create new function generator
+            </summary>
+            <param name="func">Value function</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Function.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="M:CoherentNoise.Generation.Patterns.Spheres.#ctor(System.Single)">
+            <summary>
+             Create new spheres pattern
+            </summary>
+            <param name="radius">radius</param>
+            <exception cref="T:System.ArgumentException">When radius &lt;=0 </exception>
+        </member>
+        <member name="T:CoherentNoise.Generation.Modification.Modify">
+            <summary>
+            This generator takes a source generator and applies a function to its output.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Modification.Modify.#ctor(CoherentNoise.Generator,System.Func{System.Single,System.Single})">
+            <summary>
+             Create new generator
+            </summary>
+            <param name="source">Source generator</param>
+            <param name="modifier">Modifier function to apply</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Modification.Modify.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="T:CoherentNoise.Interpolation.SCurve">
+            <summary>
+            Base class for all S-curves. S-curves determine the interpolation algorithm. Using different curves, quality-speed balance may be tweaked,
+            as better algorithms tend to be slower.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Interpolation.SCurve.Interpolate(System.Single)">
+            <summary>
+            Maps a value between 0 and 1 to some S-shaped curve.
+            Interpolated value equals to 0 when <paramref name="t"/>==0 and to 1 when <paramref name="t"/>==1
+            Values outside of [0,1] range are illegal
+            
+            Good interpolation also has derivatives of result equal to 0 when <paramref name="t"/> is 0 or 1 (the higher order derivatives are zeroed, the better).
+            </summary>
+            <param name="t">Interpolation value (0 to 1)</param>
+            <returns>Mapped value</returns>
+        </member>
+        <member name="F:CoherentNoise.Interpolation.SCurve.Linear">
+            <summary>
+             Linear interpolator is the fastest and has the lowest quality, only ensuring continuity of noise values, not their derivatives.
+            </summary>
+        </member>
+        <member name="F:CoherentNoise.Interpolation.SCurve.Cubic">
+            <summary>
+             Cubic interpolation is a good compromise between speed and quality. It's slower than linear, but ensures continuity of 1-st order derivatives, making noise smooth.
+            </summary>
+        </member>
+        <member name="F:CoherentNoise.Interpolation.SCurve.Quintic">
+            <summary>
+             Quintic interpolation is the most smooth, guarateeing continuinty of second-order derivatives. it is slow, however.
+            </summary>
+        </member>
+        <member name="F:CoherentNoise.Interpolation.SCurve.Cosine">
+            <summary>
+             Cosine interpolation uses cosine function instead of power curve, resulting in somewhat smoother noise than cubic interpolation, but still only achieving first-order continuity.
+             Depending on target machine, it may be faster than quintic interpolation.
+            </summary>
+        </member>
+        <member name="F:CoherentNoise.Interpolation.SCurve.Default">
+            <summary>
+             Default interpolator. Noise generators will use this one if you don't supply concrete interlpolator in the constructor. 
+            </summary>
+        </member>
+        <member name="T:CoherentNoise.Generation.Voronoi.VoronoiCells2D">
+            <summary>
+            Voronoi cell diagram uses a set of control points to partition space into cells. Each point in space belongs to a cell that corresponds to closest control point.
+            This generator distributes control pointsby randomly displacing points with integer coordinates. Thus, every unit-sized cube will have a single control point in it,
+            randomly placed. A user-supplied function is then used to obtain cell value for a given point.
+            
+            2D version is faster, but ignores Z coordinate.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiCells2D.#ctor(System.Int32,System.Func{System.Int32,System.Int32,System.Single})">
+            <summary>
+            Create new Voronoi diagram using seed. Control points will be obtained using random displacment seeded by supplied value
+            </summary>
+            <param name="seed">Seed value</param>
+            <param name="cellValueSource">Function that returns cell's value</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiCells2D.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="P:CoherentNoise.Generation.Voronoi.VoronoiCells2D.Period">
+            <summary>
+            Noise period. Used for repeating (seamless) noise.
+            When Period &gt;0 resulting noise pattern repeats exactly every Period, for all coordinates.
+            </summary>
+        </member>
+        <member name="P:CoherentNoise.Generation.Voronoi.VoronoiCells2D.Frequency">
+            <summary>
+            Frequency of control points. This has the same effect as applying <see cref="T:CoherentNoise.Generation.Displacement.Scale"/> transform to the generator, or placing control points closer together (for high frequency) or further apart (for low frequency)
+            </summary>
+        </member>
+        <member name="T:CoherentNoise.Generation.Fractal.RidgeNoise">
+            <summary>
+            This generator adds samples with weight decreasing with frequency, like Perlin noise; however, each signal is taken as absolute value, and weighted by previous (i.e. lower-frequency) signal,
+            creating a sort of feedback loop. Resulting noise has sharp ridges, somewhat resembling cliffs. This is useful for terrain generation.
+            </summary>
+        </member>
+        <member name="T:CoherentNoise.Generation.Fractal.FractalNoiseBase">
+            <summary>
+             base class for fractal noise generators. Fractal generators use a source noise, that is sampled at several frequencies. 
+             These sampled values are then combined into a result using some algorithm. 
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Fractal.FractalNoiseBase.#ctor(System.Int32)">
+            <summary>
+            Creates a new fractal noise using default source: gradient noise seeded by supplied seed value
+            </summary>
+            <param name="seed">seed value</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Fractal.FractalNoiseBase.#ctor(CoherentNoise.Generator)">
+            <summary>
+            Creates a new fractal noise, supplying your own source generator
+            </summary>
+            <param name="source">source noise</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Fractal.FractalNoiseBase.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="M:CoherentNoise.Generation.Fractal.FractalNoiseBase.CombineOctave(System.Int32,System.Single,System.Single)">
+            <summary>
+            Returns new resulting noise value after source noise is sampled. 
+            </summary>
+            <param name="curOctave">Octave at which source is sampled (this always starts with 0</param>
+            <param name="signal">Sampled value</param>
+            <param name="value">Resulting value from previous step</param>
+            <returns>Resulting value adjusted for this sample</returns>
+        </member>
+        <member name="M:CoherentNoise.Generation.Fractal.FractalNoiseBase.OnParamsChanged">
+            <summary>
+            This method is called whenever any generator's parameter is changed (i.e. Lacunarity, Frequency or OctaveCount). Override it to precalculate any values used in generation.
+            </summary>
+        </member>
+        <member name="P:CoherentNoise.Generation.Fractal.FractalNoiseBase.Lacunarity">
+            <summary>
+             Frequency coefficient. Sampling frequency is multiplied by lacunarity value with each octave.
+             Default value is 2, so that every octave doubles sampling frequency
+            </summary>
+        </member>
+        <member name="P:CoherentNoise.Generation.Fractal.FractalNoiseBase.OctaveCount">
+            <summary>
+            Number of octaves to sample. Default is 6.
+            </summary>
+        </member>
+        <member name="P:CoherentNoise.Generation.Fractal.FractalNoiseBase.Frequency">
+            <summary>
+            Initial frequency.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Fractal.RidgeNoise.#ctor(System.Int32)">
+            <summary>
+             Create new ridge generator using seed (seed is used to create a <see cref="T:CoherentNoise.Generation.GradientNoise"/> source)
+            </summary>
+            <param name="seed">seed value</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Fractal.RidgeNoise.#ctor(CoherentNoise.Generator)">
+            <summary>
+             Create new ridge generator with user-supplied source. Usually one would use this with <see cref="T:CoherentNoise.Generation.ValueNoise"/> or gradient noise with less dimensions, but 
+             some weird effects may be achieved with other generators.
+            </summary>
+            <param name="source">noise source</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Fractal.RidgeNoise.CombineOctave(System.Int32,System.Single,System.Single)">
+            <summary>
+            Returns new resulting noise value after source noise is sampled. 
+            </summary>
+            <param name="curOctave">Octave at which source is sampled (this always starts with 0</param>
+            <param name="signal">Sampled value</param>
+            <param name="value">Resulting value from previous step</param>
+            <returns>Resulting value adjusted for this sample</returns>
+        </member>
+        <member name="M:CoherentNoise.Generation.Fractal.RidgeNoise.OnParamsChanged">
+            <summary>
+            This method is called whenever any generator's parameter is changed (i.e. Lacunarity, Frequency or OctaveCount). Override it to precalculate any values used in generation.
+            </summary>
+        </member>
+        <member name="P:CoherentNoise.Generation.Fractal.RidgeNoise.Exponent">
+            <summary>
+            Exponent defines how fast weights decrease with frequency. The higher the exponent, the less weight is given to high frequencies. 
+            Default value is 1
+            </summary>
+        </member>
+        <member name="P:CoherentNoise.Generation.Fractal.RidgeNoise.Offset">
+            <summary>
+            Offset is applied to signal at every step. Default value is 1
+            </summary>
+        </member>
+        <member name="P:CoherentNoise.Generation.Fractal.RidgeNoise.Gain">
+            <summary>
+            Gain is the weight factor for previous-step signal. Higher gain means more feedback and noisier ridges. 
+            Default value is 2.
+            </summary>
+        </member>
+        <member name="T:CoherentNoise.Generation.Modification.Bias">
+            <summary>
+            Bias generator is used to "shift" mean value of source noise. Source is assumed to have values between -1 and 1; after Bias is applied,
+            the result is still between -1 and 1, but the points that were equal to 0 are shifted by <i>bias value</i>.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Modification.Bias.#ctor(CoherentNoise.Generator,System.Single)">
+            <summary>
+             Create new generator
+            </summary>
+            <param name="source">Source generator</param>
+            <param name="bias">Bias value</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Modification.Bias.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Patterns.Planes">
+            <summary>
+             Generates planes parallel to YZ plane. Resulting "noise" has value -1 on YZ plane, 1 at step distance, -1 at 2*step etc. 
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Patterns.Planes.#ctor(System.Single)">
+            <summary>
+             Create new planes pattern
+            </summary>
+            <param name="step">step</param>
+            <exception cref="T:System.ArgumentException">When step &lt;=0 </exception>
+        </member>
+        <member name="T:CoherentNoise.Generation.Combination.Multiply">
+            <summary>
+            Generator that multiplies two noise values
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Combination.Multiply.#ctor(CoherentNoise.Generator,CoherentNoise.Generator)">
+            <summary>
+             Create new generator
+            </summary>
+            <param name="a">First generator to multiply</param>
+            <param name="b">Second generator to multiply</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Combination.Multiply.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+            Returns noise value at given point. 
+            </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param>
+            <returns>Noise value</returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Displacement.Translate">
+            <summary>
+             This generator translates its source by given vector.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Displacement.Translate.#ctor(CoherentNoise.Generator,UnityEngine.Vector3)">
+            <summary>
+             Create new translation
+            </summary>
+            <param name="source">Source generator</param>
+            <param name="v">Translate value</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Displacement.Translate.#ctor(CoherentNoise.Generator,System.Single,System.Single,System.Single)">
+            <summary>
+             Create new translation
+            </summary>
+            <param name="source">Source generator</param>
+            <param name="x">Translate amount along X axis</param>
+            <param name="y">Translate amount along Y axis</param>
+            <param name="z">Translate amount along Z axis</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Displacement.Translate.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Voronoi.VoronoiPits2D">
+            <summary>
+            This generator creates a "pits" Voronoi diargam, that simply returns distance to closest control point. Resulting noise has value 0 at control points (forming pits) and higher values away from control points.
+            </summary>
+        </member>
+        <member name="T:CoherentNoise.Generation.Voronoi.VoronoiDiagramBase2D">
+            <summary>
+            Base class for 2D Voronoi diagrams generators. Voronoi diagrams use a set of control points, that are somehow distributed, and for every point calculate distances to the closest control points.
+            These distances are then combined to obtain final noise value.
+            This generator distributes control points by randomly displacing points with integer coordinates. Thus, every unit-sized cube will have a single control point in it,
+            randomly placed.
+            2D version is faster, but ignores Z coordinate.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiDiagramBase2D.#ctor(System.Int32)">
+            <summary>
+            Create new Voronoi diagram using seed. Control points will be obtained using random displacment seeded by supplied value
+            </summary>
+            <param name="seed">Seed value</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiDiagramBase2D.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param>
+            <returns>Noise value</returns>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiDiagramBase2D.GetResult(System.Single,System.Single,System.Single)">
+            <summary>
+            Override this method to calculate final value using distances to closest control points.
+            Note that distances that get passed to this function are adjusted for frequency (i.e. distances are scaled so that 
+            control points are in unit sized cubes)
+            </summary>
+            <param name="min1">Distance to closest point</param>
+            <param name="min2">Distance to second-closest point</param>
+            <param name="min3">Distance to third-closest point</param>
+            <returns></returns>
+        </member>
+        <member name="P:CoherentNoise.Generation.Voronoi.VoronoiDiagramBase2D.Period">
+            <summary>
+            Noise period. Used for repeating (seamless) noise.
+            When Period &gt;0 resulting noise pattern repeats exactly every Period, for all coordinates.
+            </summary>
+        </member>
+        <member name="P:CoherentNoise.Generation.Voronoi.VoronoiDiagramBase2D.Frequency">
+            <summary>
+            Frequency of control points. This has the same effect as applying <see cref="T:CoherentNoise.Generation.Displacement.Scale"/> transform to the generator, or placing control points closer together (for high frequency) or further apart (for low frequency)
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiPits2D.#ctor(System.Int32)">
+            <summary>
+            Create new Voronoi diagram using seed. Control points will be obtained using random displacment seeded by supplied value
+            </summary>
+            <param name="seed">Seed value</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiPits2D.GetResult(System.Single,System.Single,System.Single)">
+            <summary>
+            Override this method to calculate final value using distances to closest control points.
+            Note that distances that get passed to this function are adjusted for frequency (i.e. distances are scaled so that 
+            control points are in unit sized cubes)
+            </summary>
+            <param name="min1">Distance to closest point</param>
+            <param name="min2">Distance to second-closest point</param>
+            <param name="min3">Distance to third-closest point</param>
+            <returns></returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Patterns.Cylinders">
+            <summary>
+             Generates concentric cylinders centered in (0,0,0) and parallel to Z axis. Resulting "noise" has value -1 in the center, 1 at radius, -1 at 2*radius etc. 
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Patterns.Cylinders.#ctor(System.Single)">
+            <summary>
+             Create new cylinders pattern
+            </summary>
+            <param name="radius">radius</param>
+            <exception cref="T:System.ArgumentException">When radius &lt;=0 </exception>
+        </member>
+        <member name="T:CoherentNoise.Generation.Modification.Binarize">
+            <summary>
+            This generator binarizes its source noise, returning only value 0 and 1. A constant treshold value is user for binarization. I.e. result will be 0 where source value is less than treshold,
+            and 1 elsewhere.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Modification.Binarize.#ctor(CoherentNoise.Generator,System.Single)">
+            <summary>
+             Create new binarize generator
+            </summary>
+            <param name="source">Source generator</param>
+            <param name="treshold">Treshold value</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Modification.Binarize.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Constant">
+            <summary>
+             Constant "noise". This generator returns constant value, ignoring input coordinates. Used for arithmetic operations on noise generators
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Constant.#ctor(System.Single)">
+            <summary>
+             Create new constant generator
+            </summary>
+            <param name="value">Value returned by generator</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Constant.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+            Returns noise value at given point. 
+            </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param>
+            <returns>Noise value</returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Voronoi.VoronoiCells">
+            <summary>
+            Voronoi cell diagram uses a set of control points to partition space into cells. Each point in space belongs to a cell that corresponds to closest control point.
+            This generator distributes control points using a vector noise source, that displaces points with integer coordinates. Thus, every unit-sized cube will have a single control point in it,
+            randomly placed. A user-supplied function is then used to obtain cell value for a given point.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiCells.#ctor(System.Int32,System.Func{System.Int32,System.Int32,System.Int32,System.Single})">
+            <summary>
+            Create new Voronoi diagram using seed. Control points will be obtained using random displacment seeded by supplied value
+            </summary>
+            <param name="seed">Seed value</param>
+            <param name="cellValueSource">Function that returns cell's value</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiCells.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="P:CoherentNoise.Generation.Voronoi.VoronoiCells.Period">
+            <summary>
+            Noise period. Used for repeating (seamless) noise.
+            When Period &gt;0 resulting noise pattern repeats exactly every Period, for all coordinates.
+            </summary>
+        </member>
+        <member name="P:CoherentNoise.Generation.Voronoi.VoronoiCells.Frequency">
+            <summary>
+            Frequency of control points. This has the same effect as applying <see cref="T:CoherentNoise.Generation.Displacement.Scale"/> transform to the generator, or placing control points closer together (for high frequency) or further apart (for low frequency)
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Patterns.Helpers.Saw(System.Single)">
+            <summary>
+            Saw function that is equal to 1 in odd points and -1 at even points
+            </summary>
+            <param name="x"></param>
+            <returns></returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Displacement.Turbulence">
+            <summary>
+             Turbulence is a case of Perturb generator, that uses 3 Perlin noise generators as displacement source.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Displacement.Turbulence.#ctor(CoherentNoise.Generator,System.Int32)">
+            <summary>
+             Create new perturb generator
+            </summary>
+            <param name="source">Source generator</param>
+            <param name="seed">Seed value for perturbation noise</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Displacement.Turbulence.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="P:CoherentNoise.Generation.Displacement.Turbulence.Power">
+            <summary>
+             Turbulence power, in other words, amount by which source will be perturbed.
+             
+             Default value is 1.
+            </summary>
+        </member>
+        <member name="P:CoherentNoise.Generation.Displacement.Turbulence.Frequency">
+            <summary>
+             Frequency of perturbation noise. 
+             
+             Default value is 1.
+            </summary>
+        </member>
+        <member name="P:CoherentNoise.Generation.Displacement.Turbulence.OctaveCount">
+            <summary>
+            Octave count of perturbation noise
+            
+            Default value is 6
+            </summary>
+        </member>
+        <member name="T:CoherentNoise.Generation.Displacement.Rotate">
+            <summary>
+            This generator rotates its source around origin.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Displacement.Rotate.#ctor(CoherentNoise.Generator,UnityEngine.Quaternion)">
+            <summary>
+             Create new rotation using a quaternion
+            </summary>
+            <param name="source">Source generator</param>
+            <param name="rotation">Rotation</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Displacement.Rotate.#ctor(CoherentNoise.Generator,System.Single,System.Single,System.Single)">
+            <summary>
+             Create new rotation using Euler angles
+            </summary>
+            <param name="source">Source generator</param>
+            <param name="angleX">Rotation around X axis</param>
+            <param name="angleY">Rotation around Y axis</param>
+            <param name="angleZ">Rotation around Z axis</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Displacement.Rotate.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Voronoi.VoronoiValleys">
+            <summary>
+            This generator creates a "valleys" Voronoi diargam, that returns difference between two closest distances. Resulting noise has highest value at control points and 0 away from control points.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiValleys.#ctor(System.Int32)">
+            <summary>
+            Create new Voronoi diagram using seed. Control points will be obtained using random <see cref="T:CoherentNoise.Generation.GradientNoise"/> displacment seeded by supplied value
+            </summary>
+            <param name="seed">Seed value</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiValleys.GetResult(System.Single,System.Single,System.Single)">
+            <summary>
+            Override this method to calculate final value using distances to closest control points.
+            Note that distances that get passed to this function are adjusted for frequency (i.e. distances are scaled so that 
+            control points are in unit sized cubes)
+            </summary>
+            <param name="min1">Distance to closest point</param>
+            <param name="min2">Distance to second-closest point</param>
+            <param name="min3">Distance to third-closest point</param>
+            <returns></returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Modification.Curve">
+            <summary>
+             This generator modifies source noise by applying a curve transorm to it. Curves can be edited using Unity editor's CurveFields, or created procedurally.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Modification.Curve.#ctor(CoherentNoise.Generator,UnityEngine.AnimationCurve)">
+            <summary>
+             Create a new curve generator
+            </summary>
+            <param name="source">Source generator</param>
+            <param name="curve">Curve to use</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Modification.Curve.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Fractal.BillowNoise">
+            <summary>
+            A variation of Perlin noise, this generator creates billowy shapes useful for cloud generation. It uses the same formula as Perlin noise, but adds 
+            absolute values of signal
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Fractal.BillowNoise.#ctor(System.Int32)">
+            <summary>
+             Create new billow generator using seed (seed is used to create a <see cref="T:CoherentNoise.Generation.GradientNoise"/> source)
+            </summary>
+            <param name="seed">seed value</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Fractal.BillowNoise.#ctor(CoherentNoise.Generator)">
+            <summary>
+             Create new billow generator with user-supplied source. Usually one would use this with <see cref="T:CoherentNoise.Generation.ValueNoise"/> or gradient noise with less dimensions, but 
+             some weird effects may be achieved with other generators.
+            </summary>
+            <param name="source">noise source</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Fractal.BillowNoise.CombineOctave(System.Int32,System.Single,System.Single)">
+            <summary>
+            Returns new resulting noise value after source noise is sampled. 
+            </summary>
+            <param name="curOctave">Octave at which source is sampled (this always starts with 0</param>
+            <param name="signal">Sampled value</param>
+            <param name="value">Resulting value from previous step</param>
+            <returns>Resulting value adjusted for this sample</returns>
+        </member>
+        <member name="P:CoherentNoise.Generation.Fractal.BillowNoise.Persistence">
+            <summary>
+            Persistence value determines how fast signal diminishes with frequency. i-th octave signal will be multiplied by presistence to the i-th power.
+            Note that persistence values >1 are possible, but will not produce interesting noise (lower frequencies will just drown out)
+            
+            Default value is 0.5
+            </summary>
+        </member>
+        <member name="T:CoherentNoise.Generation.Modification.Gain">
+            <summary>
+            This generator is used to "sharpen" noise, shifting extreme values closer to -1 and 1, while leaving 0 in place. Source noise is
+            clamped to [-1,1], as values outside of this range may result in division by 0. Resulting noise is between -1 and 1, with values that
+            were equal to 0.5 shifted to 0.5+gain/2, and those that were equal to -0.5 shifted to -0.5-gain/2.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Modification.Gain.#ctor(CoherentNoise.Generator,System.Single)">
+            <summary>
+             Create new generator
+            </summary>
+            <param name="source">Source generator</param>
+            <param name="gain">Gain value</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Modification.Gain.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="T:CoherentNoise.Interpolation.LinearSCurve">
+            <summary>
+             Linear interpolator is the fastest and has the lowest quality, only ensuring continuity of noise values, not their derivatives.
+            </summary>
+        </member>
+        <member name="T:CoherentNoise.Generation.GradientNoise">
+            <summary>
+            Gradient noise is a smoother variant of coherent noise. Instead of assingning random values to integer points, it assigns random gradient vectros, and interpolates values
+            between them. Resulting noise is smoother than value noise, as one more degree of continuity is achieved (i.e. gradient noise with linear interpolation has continuous 1st-order derivative)
+            However, it is slower than value noise.
+            
+            This generator returns values in the [-1,1] range.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.GradientNoise.#ctor(System.Int32)">
+            <summary>
+            Create new generator with specified seed
+            </summary>
+            <param name="seed">noise seed</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.GradientNoise.#ctor(System.Int32,CoherentNoise.Interpolation.SCurve)">
+            <summary>
+            Create new generator with specified seed and interpolation algorithm. Different interpolation algorithms can make noise smoother at the expense of speed.
+            </summary>
+            <param name="seed">noise seed</param>
+            <param name="sCurve">Interpolator to use. Can be null, in which case default will be used</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.GradientNoise.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+            Returns noise value at given point. 
+            </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param>
+            <returns>Noise value</returns>
+        </member>
+        <member name="P:CoherentNoise.Generation.GradientNoise.Period">
+            <summary>
+            Noise period. Used for repeating (seamless) noise.
+            When Period &gt;0 resulting noise pattern repeats exactly every Period, for all coordinates.
+            </summary>
+        </member>
+        <member name="T:CoherentNoise.Generation.Combination.Blend">
+            <summary>
+            This generator blends two noises together, using third as a blend weight. Note that blend weight's value is clamped to [0,1] range
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Combination.Blend.#ctor(CoherentNoise.Generator,CoherentNoise.Generator,CoherentNoise.Generator)">
+            <summary>
+             Create new blend generator
+            </summary>
+            <param name="a">First generator to blend (this is returned if weight==0)</param>
+            <param name="b">Second generator to blend (this is returned if weight==1)</param>
+            <param name="weight">Blend weight source</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Combination.Blend.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Combination.Max">
+            <summary>
+            This generator returns maximum value of its two source generators
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Combination.Max.#ctor(CoherentNoise.Generator,CoherentNoise.Generator)">
+            <summary>
+             Create new generator
+            </summary>
+            <param name="a">First generator</param>
+            <param name="b">Second generator</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Combination.Max.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+            Returns noise value at given point. 
+            </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param>
+            <returns>Noise value</returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Combination.Min">
+            <summary>
+            This generator returns minimum value of its two source generators
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Combination.Min.#ctor(CoherentNoise.Generator,CoherentNoise.Generator)">
+            <summary>
+             Create new generator
+            </summary>
+            <param name="a">First generator</param>
+            <param name="b">Second generator</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Combination.Min.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+            Returns noise value at given point. 
+            </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param>
+            <returns>Noise value</returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Combination.Add">
+            <summary>
+            Generator that adds two noise values together
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Combination.Add.#ctor(CoherentNoise.Generator,CoherentNoise.Generator)">
+            <summary>
+             Create new generator
+            </summary>
+            <param name="a">First generator to add</param>
+            <param name="b">Second generator to add</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Combination.Add.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+            Returns noise value at given point. 
+            </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param>
+            <returns>Noise value</returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.ValueNoise2D">
+            <summary>
+            This is the same noise as <see cref="T:CoherentNoise.Generation.ValueNoise"/>, but it does not change in Z direction. This is more efficient if you're only interested in 2D noise anyway.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.ValueNoise2D.#ctor(System.Int32)">
+            <summary>
+            Create new generator with specified seed
+            </summary>
+            <param name="seed">noise seed</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.ValueNoise2D.#ctor(System.Int32,CoherentNoise.Interpolation.SCurve)">
+            <summary>
+            Create new generator with specified seed and interpolation algorithm. Different interpolation algorithms can make noise smoother at the expense of speed.
+            </summary>
+            <param name="seed">noise seed</param>
+            <param name="sCurve">Interpolator to use. Can be null, in which case default will be used</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.ValueNoise2D.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+            Returns noise value at given point. 
+            </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param>
+            <returns>Noise value</returns>
+        </member>
+        <member name="P:CoherentNoise.Generation.ValueNoise2D.Period">
+            <summary>
+            Noise period. Used for repeating (seamless) noise.
+            When Period &gt;0 resulting noise pattern repeats exactly every Period, for all coordinates.
+            </summary>
+        </member>
+        <member name="T:CoherentNoise.Generation.Voronoi.VoronoiValleys2D">
+            <summary>
+            This generator creates a "valleys" Voronoi diargam, that returns difference between two closest distances. Resulting noise has highest value at control points and 0 away from control points.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiValleys2D.#ctor(System.Int32)">
+            <summary>
+            Create new Voronoi diagram using seed. Control points will be obtained using random displacment seeded by supplied value
+            </summary>
+            <param name="seed">Seed value</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Voronoi.VoronoiValleys2D.GetResult(System.Single,System.Single,System.Single)">
+            <summary>
+            Override this method to calculate final value using distances to closest control points.
+            Note that distances that get passed to this function are adjusted for frequency (i.e. distances are scaled so that 
+            control points are in unit sized cubes)
+            </summary>
+            <param name="min1">Distance to closest point</param>
+            <param name="min2">Distance to second-closest point</param>
+            <param name="min3">Distance to third-closest point</param>
+            <returns></returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.GradientNoise2D">
+            <summary>
+            This is the same noise as <see cref="T:CoherentNoise.Generation.GradientNoise"/>, but it does not change in Z direction. This is more efficient if you're only interested in 2D noise anyway.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.GradientNoise2D.#ctor(System.Int32)">
+            <summary>
+            Create new generator with specified seed
+            </summary>
+            <param name="seed">noise seed</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.GradientNoise2D.#ctor(System.Int32,CoherentNoise.Interpolation.SCurve)">
+            <summary>
+            Create new generator with specified seed and interpolation algorithm. Different interpolation algorithms can make noise smoother at the expense of speed.
+            </summary>
+            <param name="seed">noise seed</param>
+            <param name="sCurve">Interpolator to use. Can be null, in which case default will be used</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.GradientNoise2D.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+            Returns noise value at given point. 
+            </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param>
+            <returns>Noise value</returns>
+        </member>
+        <member name="P:CoherentNoise.Generation.GradientNoise2D.Period">
+            <summary>
+            Noise period. Used for repeating (seamless) noise.
+            When Period &gt;0 resulting noise pattern repeats exactly every Period, for all coordinates.
+            </summary>
+        </member>
+        <member name="T:CoherentNoise.Generation.Cache">
+            <summary>
+            This generator returns its source unchanged. However, it caches last returned value, and does not recalculate it if called several times for the same point.
+            This is handy if you use same noise generator in different places.
+            
+            Note that displacement, fractal and Voronoi generators call GetValue at different points for their respective source generators.  
+            This wil trash the Cache and negate any performance benefit, so there's no point in using Cache with these generators.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Cache.#ctor(CoherentNoise.Generator)">
+            <summary>
+            Create new caching generator
+            </summary>
+            <param name="source">Source generator</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Cache.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="T:CoherentNoise.NoiseEx">
+            <summary>
+            This class defines a number of useful extension methods for <see cref="T:CoherentNoise.Generator"/> class, that apply common noise transformations
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.NoiseEx.Scale(CoherentNoise.Generator,System.Single,System.Single,System.Single)">
+            <summary>
+             Stretch/squeeze noise generator (<see cref="T:CoherentNoise.Generation.Displacement.Scale"/>)
+            </summary>
+            <param name="source">Source noise</param>
+            <param name="x">Squeeze in X direction</param>
+            <param name="y">Squeeze in Y direction</param>
+            <param name="z">Squeeze in Z direction</param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.NoiseEx.Translate(CoherentNoise.Generator,System.Single,System.Single,System.Single)">
+            <summary>
+             Translate (move) noise <see cref="T:CoherentNoise.Generation.Displacement.Translate"/>
+            </summary>
+            <param name="source">Source noise</param>
+            <param name="x">Distance in X direction</param>
+            <param name="y">Distance in Y direction</param>
+            <param name="z">Distance in Z direction</param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.NoiseEx.Rotate(CoherentNoise.Generator,System.Single,System.Single,System.Single)">
+            <summary>
+             Roate noise (<see cref="T:CoherentNoise.Generation.Displacement.Rotate"/>)
+            </summary>
+            <param name="source">Noise source</param>
+            <param name="x">Angle around X axis</param>
+            <param name="y">Angle around Y axis</param>
+            <param name="z">Angle around Z axis</param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.NoiseEx.Turbulence(CoherentNoise.Generator,System.Single,System.Single,System.Int32)">
+            <summary>
+             Apply turnbulence transform to noise (<see cref="T:CoherentNoise.Generation.Displacement.Turbulence"/>)
+            </summary>
+            <param name="source">Noise source</param>
+            <param name="frequency">Turbulence base frequency</param>
+            <param name="power">Turbulence power</param>
+            <param name="seed">Turbulence seed</param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.NoiseEx.Turbulence(CoherentNoise.Generator,System.Single,System.Single)">
+            <summary>
+             Apply turnbulence transform to noise (<see cref="T:CoherentNoise.Generation.Displacement.Turbulence"/>) with random seed
+            </summary>
+            <param name="source">Noise source</param>
+            <param name="frequency">Turbulence base frequency</param>
+            <param name="power">Turbulence power</param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.NoiseEx.Blend(CoherentNoise.Generator,CoherentNoise.Generator,CoherentNoise.Generator)">
+            <summary>
+             Blend two noise generators using third one as weight
+            </summary>
+            <param name="source">Source noise</param>
+            <param name="other">Noise to blend</param>
+            <param name="weight">Blend weight</param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.NoiseEx.Modify(CoherentNoise.Generator,System.Func{System.Single,System.Single})">
+            <summary>
+             Apply modification function to noise
+            </summary>
+            <param name="source">Source noise</param>
+            <param name="modifier">Function to apply</param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.NoiseEx.Curve(CoherentNoise.Generator,UnityEngine.AnimationCurve)">
+            <summary>
+             Multiply noise by AnimationCurve value
+            </summary>
+            <param name="source">Source noise</param>
+            <param name="curve">Curve</param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.NoiseEx.Binarize(CoherentNoise.Generator,System.Single)">
+            <summary>
+             Binarize noise 
+            </summary>
+            <param name="source">Source noise</param>
+            <param name="treshold">Treshold value</param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.NoiseEx.Bias(CoherentNoise.Generator,System.Single)">
+            <summary>
+            Apply bias to noise
+            </summary>
+            <param name="source">Source noise</param>
+            <param name="b">Bias value</param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.NoiseEx.Gain(CoherentNoise.Generator,System.Single)">
+            <summary>
+            Apply gain to noise
+            </summary>
+            <param name="source">Source noise</param>
+            <param name="g">Gain value</param>
+            <returns></returns>
+        </member>
+        <member name="M:CoherentNoise.NoiseEx.ScaleShift(CoherentNoise.Generator,System.Single,System.Single)">
+            <summary>
+             Apply a linear transform to noise. The same as <code>noise.Modify(f=>a*f+b)</code>
+            </summary>
+            <param name="source">Source noise</param>
+            <param name="a">Scale value</param>
+            <param name="b">Shift value</param>
+            <returns></returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Patterns.TexturePattern">
+            <summary>
+             This generator does the opposite of texture generation. It takes a texture and returns its red channel as a noise value.
+             Use it to incorporate hand-created patterns in your generation.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Patterns.TexturePattern.#ctor(UnityEngine.Texture2D,UnityEngine.TextureWrapMode)">
+            <summary>
+             Create new texture generator
+            </summary>
+            <param name="texture">Texture to use. It must be readable. The texture is read in constructor, so any later changes to it will not affect this generator</param>
+            <param name="wrapMode">Wrapping mode</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Patterns.TexturePattern.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Fractal.PinkNoise">
+            <summary>
+            Pink noise is a fractal noise that adds together weighted signals sampled at different frequencies, with weight inversely proportional to frequency. .
+            When source noise is <see cref="T:CoherentNoise.Generation.GradientNoise"/>, this becomes Perlin noise.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Fractal.PinkNoise.#ctor(System.Int32)">
+            <summary>
+             Create new pink noise generator using seed. Seed is used to create a <see cref="T:CoherentNoise.Generation.GradientNoise"/> source. 
+            </summary>
+            <param name="seed">seed value</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Fractal.PinkNoise.#ctor(CoherentNoise.Generator)">
+            <summary>
+             Create new pink noise generator with user-supplied source. Usually one would use this with <see cref="T:CoherentNoise.Generation.ValueNoise"/> or gradient noise with less dimensions, but 
+             some weird effects may be achieved with other generators.
+            </summary>
+            <param name="source">noise source</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Fractal.PinkNoise.CombineOctave(System.Int32,System.Single,System.Single)">
+            <summary>
+            Returns new resulting noise value after source noise is sampled. Perlin generator adds signal, multiplied by current persistence value. Persistence value
+            is then decreased, so that higher frequencies will have less impact on resulting value.
+            </summary>
+            <param name="curOctave">Octave at which source is sampled (this always starts with 0)</param>
+            <param name="signal">Sampled value</param>
+            <param name="value">Resulting value from previous step</param>
+            <returns>Resulting value adjusted for this sample</returns>
+        </member>
+        <member name="P:CoherentNoise.Generation.Fractal.PinkNoise.Persistence">
+            <summary>
+            Persistence value determines how fast signal diminishes with frequency. i-th octave sugnal will be multiplied by presistence to the i-th power.
+            Note that persistence values >1 are possible, but will not produce interesting noise (lower frequencies will just drown out)
+            
+            Default value is 0.5
+            </summary>
+        </member>
+        <member name="T:CoherentNoise.Generation.Displacement.Scale">
+            <summary>
+             This generator scales its source by given vector.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Displacement.Scale.#ctor(CoherentNoise.Generator,UnityEngine.Vector3)">
+            <summary>
+             Create new scaling
+            </summary>
+            <param name="source">Source generator</param>
+            <param name="v">Scale value</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Displacement.Scale.#ctor(CoherentNoise.Generator,System.Single,System.Single,System.Single)">
+            <summary>
+             Create new scaling
+            </summary>
+            <param name="source">Source generator</param>
+            <param name="x">Scale amount along X axis</param>
+            <param name="y">Scale amount along Y axis</param>
+            <param name="z">Scale amount along Z axis</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Displacement.Scale.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.Displacement.Perturb">
+            <summary>
+            This generator perturbs its source, using a user-supplied function to obtain displacement values. In other words, <see cref="T:CoherentNoise.Generation.Displacement.Perturb"/> nonuniformly displaces each value of
+            its source.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.Displacement.Perturb.#ctor(CoherentNoise.Generator,System.Func{UnityEngine.Vector3,UnityEngine.Vector3})">
+            <summary>
+             Create new perturb generator
+            </summary>
+            <param name="source">Source generator</param>
+            <param name="displacementSource">Displacement generator</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.Displacement.Perturb.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+             Returns noise value at given point. 
+             </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param><returns>Noise value</returns>
+        </member>
+        <member name="T:CoherentNoise.Generation.ValueNoise">
+            <summary>
+            Most basic coherent noise: value noise. This algorithm generates random values in integer coordinates and smoothly interpolates between them.
+            Generated noise has no special characteristics except that it's noisy. 
+            
+            Values returned range from -1 to 1.
+            </summary>
+        </member>
+        <member name="M:CoherentNoise.Generation.ValueNoise.#ctor(System.Int32)">
+            <summary>
+            Create new generator with specified seed
+            </summary>
+            <param name="seed">noise seed</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.ValueNoise.#ctor(System.Int32,CoherentNoise.Interpolation.SCurve)">
+            <summary>
+            Create new generator with specified seed and interpolation algorithm. Different interpolation algorithms can make noise smoother at the expense of speed.
+            </summary>
+            <param name="seed">noise seed</param>
+            <param name="sCurve">Interpolator to use. Can be null, in which case default will be used</param>
+        </member>
+        <member name="M:CoherentNoise.Generation.ValueNoise.GetValue(System.Single,System.Single,System.Single)">
+            <summary>
+            Returns noise value at given point. 
+            </summary>
+            <param name="x">X coordinate</param>
+            <param name="y">Y coordinate</param>
+            <param name="z">Z coordinate</param>
+            <returns>Noise value</returns>
+        </member>
+        <member name="P:CoherentNoise.Generation.ValueNoise.Period">
+            <summary>
+            Noise period. Used for repeating (seamless) noise.
+            When Period &gt;0 resulting noise pattern repeats exactly every Period, for all coordinates.
+            </summary>
+        </member>
+    </members>
+</doc>

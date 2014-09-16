@@ -1,0 +1,6 @@
+fileFormatVersion: 2
+guid: dd6c0ddbb946a46268144cb96f844c08
+ShaderImporter:
+  defaultTextures:
+  - _Ramp: {fileID: 2800000, guid: 2fa488d2d99d27c4a80d8eefdc0916b3, type: 3}
+  userData: 
