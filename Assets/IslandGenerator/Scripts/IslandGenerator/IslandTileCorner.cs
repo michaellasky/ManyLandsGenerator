@@ -20,10 +20,10 @@ public class IslandTileCorner
         { 
             if (downSlopeCorner == null)
             {
-				downSlopeCorner = GetDownSlopeCorner(this);
+                downSlopeCorner = GetDownSlopeCorner(this);
             }
 
-			return downSlopeCorner;
+            return downSlopeCorner;
         }
     }
 
@@ -94,23 +94,23 @@ public class IslandTileCorner
         Index[p] = this;
     }
 
-	public static IslandTileCorner GetDownSlopeCorner(IslandTileCorner corner)
-	{
-		float lowestY = corner.ElevatedPosition.y;
-		IslandTileCorner downCorner = corner; 
+    public static IslandTileCorner GetDownSlopeCorner(IslandTileCorner corner)
+    {
+        float lowestY = corner.ElevatedPosition.y;
+        IslandTileCorner downCorner = corner; 
 
-		foreach (IslandTileCorner c in corner.adjacent)
-		{
-			float cornerY = c.ElevatedPosition.y;
-			if (cornerY < lowestY) 
-			{ 
-				downCorner = c;
-				lowestY    = cornerY; 
-			}
-		}
+        foreach (IslandTileCorner c in corner.adjacent)
+        {
+            float cornerY = c.ElevatedPosition.y;
+            if (cornerY < lowestY) 
+            { 
+                downCorner = c;
+                lowestY    = cornerY; 
+            }
+        }
 
-		return downCorner;
-	}
+        return downCorner;
+    }
 
     private void CalcWater ()
     {

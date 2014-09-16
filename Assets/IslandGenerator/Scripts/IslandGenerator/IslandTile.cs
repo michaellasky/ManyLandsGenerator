@@ -127,7 +127,7 @@ public class IslandTile
         IslandTileEdge rEdge = es[Random.Range(0, es.Length)];
         
         Vector3 v1 = rEdge.cornerA.ElevatedPosition - ElevatedCenter;
-		Vector3 v2 = rEdge.cornerB.ElevatedPosition - ElevatedCenter;
+        Vector3 v2 = rEdge.cornerB.ElevatedPosition - ElevatedCenter;
 
         float r1 = Random.value;
         float r2 = Random.value;
@@ -149,12 +149,12 @@ public class IslandTile
         {
             if (island.Tiles[VToV3(n)].IsEdgeTile) { neighborIsEdge = true; }
         }
-		
+        
         float nv = island.islandNoise.GetValue((float) center[0] / island.Scale, 
-		                                       (float) center[1] / island.Scale, 
-		                                       (float) 0);
-		
-		bool  noiseValIsLow = nv < island.WaterHeight;    
+                                               (float) center[1] / island.Scale, 
+                                               (float) 0);
+        
+        bool  noiseValIsLow = nv < island.WaterHeight;    
 
         calcedWater = true;
         isWater = forceWater || neighborIsEdge || IsEdgeTile || noiseValIsLow;

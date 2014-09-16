@@ -9,8 +9,8 @@ public class IslandTileEdge
     public HashSet<IslandTile>       neighbors = new HashSet<IslandTile>();
     public VoronoiEdge               edge;
 
-	public IslandTileCorner cornerA;
-	public IslandTileCorner cornerB;
+    public IslandTileCorner cornerA;
+    public IslandTileCorner cornerB;
 
     public IslandTileEdge (VoronoiEdge e)
     {

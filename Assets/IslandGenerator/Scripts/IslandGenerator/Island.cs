@@ -14,39 +14,39 @@ using Random = UnityEngine.Random;
 
 public class Island : MonoBehaviour 
 {
-	public  bool 								Generated 	
+    public  bool                                Generated   
     { 
         get { return islandGenerated; } 
     } 
-	
-	public  Dictionary<Vector3, IslandTile> 	Tiles 		
+    
+    public  Dictionary<Vector3, IslandTile>     Tiles       
     { 
         get { return islandTiles; } 
     }
-	
-	public  float 								WaterHeight 
+    
+    public  float                               WaterHeight 
     { 
         get { return waterHeight; } 
     }
 
-	public 	Mesh 								IslandMesh 	
+    public  Mesh                                IslandMesh  
     { 
         get { return islandMesh; } 
     }
 
-	public  float 								Scale 		
+    public  float                               Scale       
     { 
         get { return scale; } 
     }
 
-    public  int 								voronoiCells 	= 512;
+    public  int                                 voronoiCells    = 512;
     public  int                                 seed            = 1;
 
-	public  static List<Vector3[]>              vGridLineGizmos;
+    public  static List<Vector3[]>              vGridLineGizmos;
    
     public  Generator                           islandNoise;
 
-	public  Vector3                             islandPosition;
+    public  Vector3                             islandPosition;
 
     [SerializeField]
     private float                               scale = 1f;
@@ -76,29 +76,29 @@ public class Island : MonoBehaviour
 
     void Awake ()
     {
-		Instantiate();
-		GetComponents();		
+        Instantiate();
+        GetComponents();        
         renderer.material.SetFloat ("_Scale", scale);
         FindWorld();
 
     }
 
-	void FindWorld ()
-	{
-		world = GameObject.Find("World").GetComponent<World>();
+    void FindWorld ()
+    {
+        world = GameObject.Find("World").GetComponent<World>();
         World.worldSeed = seed;
         world.GenerateWorld();
-	}
+    }
 
-	void Instantiate ()
-	{
-		subIslands   = new Dictionary<int, List<IslandTile>>();
-	}
+    void Instantiate ()
+    {
+        subIslands   = new Dictionary<int, List<IslandTile>>();
+    }
 
-	void GetComponents ()
-	{
-		meshFilter      = gameObject.GetComponent<MeshFilter>();
-	}
+    void GetComponents ()
+    {
+        meshFilter      = gameObject.GetComponent<MeshFilter>();
+    }
 
     void Reset ()
     {
@@ -125,52 +125,52 @@ public class Island : MonoBehaviour
         Regenerate ();
     }
 
-	public void Regenerate ()
-	{
+    public void Regenerate ()
+    {
         Reset();
         Awake();
         Generate();
-		SetupGizmos();
-	}
+        SetupGizmos();
+    }
 
-	void SetupGizmos ()
-	{
-		vGridLineGizmos = new List<Vector3[]>();
-		
-		foreach (VoronoiEdge e in vGraph.Edges)
-		{
-			Vector3[] edgeLine = new Vector3[2] 
-			{
-				IslandTile.VToV3(e.VVertexA),
-				IslandTile.VToV3(e.VVertexB)
-			};
-			
-			vGridLineGizmos.Add(edgeLine);
-		}
-	}
-	
-	public void Generate()
+    void SetupGizmos ()
+    {
+        vGridLineGizmos = new List<Vector3[]>();
+        
+        foreach (VoronoiEdge e in vGraph.Edges)
+        {
+            Vector3[] edgeLine = new Vector3[2] 
+            {
+                IslandTile.VToV3(e.VVertexA),
+                IslandTile.VToV3(e.VVertexB)
+            };
+            
+            vGridLineGizmos.Add(edgeLine);
+        }
+    }
+    
+    public void Generate()
     {
         GenerateGraph();
         GenerateTiles();        
         MarkSubIslands();
         CullExtraneousIslands();
-		SetCornerElevations();
-		GenerateIslandMesh();
-		SetVegetation();
+        SetCornerElevations();
+        GenerateIslandMesh();
+        SetVegetation();
 
         islandGenerated = true; 
     }
 
-	public void SetVegetation ()
-	{
-		IslandVegetation[] vegetation = gameObject.GetComponents<IslandVegetation>();
+    public void SetVegetation ()
+    {
+        IslandVegetation[] vegetation = gameObject.GetComponents<IslandVegetation>();
 
-		foreach (IslandVegetation vegInstance in vegetation) 
-		{
-			vegInstance.SpawnVegetation();
-		}
-	}
+        foreach (IslandVegetation vegInstance in vegetation) 
+        {
+            vegInstance.SpawnVegetation();
+        }
+    }
 
     public void GenerateGraph ()
     {
@@ -254,7 +254,7 @@ public class Island : MonoBehaviour
 
     public bool VectorInBounds(Vector v)
     {
-		return  (v[0] > -(scale) && v[0] < scale) && 
+        return  (v[0] > -(scale) && v[0] < scale) && 
                 (v[1] > -(scale) && v[1] < scale);
     }
 
@@ -266,7 +266,7 @@ public class Island : MonoBehaviour
         for (int i = 0; i < size; i++)
         {
             rVec = Random.insideUnitCircle * scale;
-        	vectors.Add(new Vector((double) rVec.x, (double) rVec.y));
+            vectors.Add(new Vector((double) rVec.x, (double) rVec.y));
         }
 
         return vectors;
@@ -405,7 +405,7 @@ public class Island : MonoBehaviour
         return VectorIsInfinite(IslandTile.VToV3(v));
     }
 
-	private void GenerateTiles ()
+    private void GenerateTiles ()
     {
         islandTiles = new Dictionary<Vector3, IslandTile>();
 
